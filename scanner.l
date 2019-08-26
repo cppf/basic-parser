@@ -18,6 +18,7 @@ extern int yylex();
 (?i:as|integer|unsigned|single|double)        { printf("keyword: %s\n", yytext); }
 (?i:string|char|boolean)                      { printf("keyword: %s\n", yytext); }
 [,;]                                          { printf("sep: %s\n", yytext); }
+(=|<|>|<=|>=|<>)                              { printf("bin_equ: %s\n", yytext); }
 (?i:and|or|xor|imp|eqv)                       { printf("bin_log: %s\n", yytext); }
 (?i:mod)                                      { printf("bin_ari: %s\n", yytext); }
 [\+\-]                                        { printf("bin_add: %s\n", yytext); }
