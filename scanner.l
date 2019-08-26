@@ -7,6 +7,7 @@ extern int yylex();
 \n                                        { printf("br\n"); }
 \'[^\n]*                                  { printf("comment_quote: %s\n", yytext); }
 (?i:rem)[\ \t]+[^\n]*                     { printf("comment_rem: %s\n", yytext); }
+[,;]                                      { printf("sep: %s\n", yytext); }
 (?i:and|or|xor|imp|eqv)                   { printf("bin_log: %s\n", yytext); }
 (?i:mod)                                  { printf("bin_ari: %s\n", yytext); }
 [\+\-]                                    { printf("bin_add: %s\n", yytext); }
