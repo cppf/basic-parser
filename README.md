@@ -1,4 +1,4 @@
-e**.bas are example input programs to scanner.
+`e**.bas` are example input programs to scanner.
 use `./scanner <input file>` to run scanner.
 
 ```
