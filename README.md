@@ -1,2 +1,7 @@
-# compilers_scanner
-Using of "flex" scanner for learning.
+e**.bas are example input programs to scanner.
+use `./scanner <input file>` to run scanner.
+
+```
+Subhajit Sahu
+2018801013
+```
