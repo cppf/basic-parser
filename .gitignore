@@ -1,5 +1,9 @@
 # Generated files
-
+lex.yy.c
+parser.tab.h
+parser.tab.c
+scanner
+parser
 
 # Prerequisites
 *.d

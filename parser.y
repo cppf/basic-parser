@@ -1,11 +1,19 @@
 %{
 #include <stdio.h>
 extern int yylex();
+extern char *yytext;
 %}
+
+%token NAME
+%token INTEGER
+%token FLOAT
+%token STRING
+%token BOOLEAN
+%token COMMENT
 
 %%
 
-
+S: INTEGER | %empty { printf("got number %s\n", yytext); }
 
 %%
 int main(int argc, char **argv) {
