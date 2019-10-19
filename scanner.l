@@ -1,10 +1,12 @@
 %{
-#include <stdio.h>
-extern int yylex();
+#include "parser.tab.h"
+int line = 0;
 %}
+
 %%
-[ \t]                                       ;
-\n                                            { printf("br\n"); }
+
+[ \t]                                         ;
+\n                                            { printf("br\n"); line++; }
 \'[^\n]*                                      { printf("comment_quote: %s\n", yytext); }
 (?i:rem)[\ \t]+[^\n]*                         { printf("comment_rem: %s\n", yytext); }
 (?i:declare|sub|function|type|end)            { printf("keyword: %s\n", yytext); }
@@ -31,10 +33,5 @@ extern int yylex();
 [-+]?([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?     { printf("float: %s\n", yytext); }
 [A-Za-z_][A-Za-z_!@#$%&?]*                    { printf("name: %s\n", yytext); }
 .
+
 %%
-int main(int argc, char **argv) {
-  char *input = argc > 1? argv[1] : "input.bas";
-  yyin = fopen(input, "r");
-  while(yylex());
-  return 0;
-}
