@@ -1,14 +1,22 @@
 %{
 #include "parser.tab.h"
+#include "lutil.h"
 int line = 0;
 %}
+
+D   [0-9]
+A   [A-Za-z_]
+TYP [!@#$%&?]
+INT [-+]?{D}+
+FLT [-+]?({D}*\.)?{D}+([eE]{INT})?
+STR \"(\\.|[^"\\])*\"
 
 %%
 
 [ \t]                                         ;
 \n                                            { line++; return BR; }
-\'[^\n]*                                      { return COMMENT_QUOTE; }
-(?i:rem)[\ \t]+[^\n]*                         { return COMMENT_REM; }
+\'[^\n]*                                      { yylval.s = yytext+1; return COMMENT_QUOTE; }
+(?i:rem)[\ \t]+[^\n]*                         { yylval.s = yytext+4; return COMMENT_REM; }
 (?i:declare|sub|function|type|end)            { printf("keyword: %s\n", yytext); }
 (?i:dim|shared|redim|static|let|const)        { printf("keyword: %s\n", yytext); }
 (?i:input|print|using)                        { printf("keyword: %s\n", yytext); }
@@ -18,20 +26,26 @@ int line = 0;
 (?i:if|then|elseif|else|endif|select|case)    { printf("keyword: %s\n", yytext); }
 (?i:for|to|step|nextwhile|wend|do|loop|until) { printf("keyword: %s\n", yytext); }
 (?i:as|integer|unsigned|single|double)        { printf("keyword: %s\n", yytext); }
-(?i:string|char|boolean)                      { printf("keyword: %s\n", yytext); }
-[,;]                                          { printf("sep: %s\n", yytext); }
-(=|<|>|<=|>=|<>)                              { printf("bin_equ: %s\n", yytext); }
-(?i:and|or|xor|imp|eqv)                       { printf("bin_log: %s\n", yytext); }
-(?i:mod)                                      { printf("bin_ari: %s\n", yytext); }
-[\+\-]                                        { printf("bin_add: %s\n", yytext); }
-[\*\/\\]                                      { printf("bin_mul: %s\n", yytext); }
-[\^]                                          { printf("bin_pow: %s\n", yytext); }
-(?i:not)                                      { printf("una_log: %s\n", yytext); }
-(?i:true|false)                               { printf("boolean: %s\n", yytext); }
-\"(\\.|[^"\\])*\"                             { printf("string: %s\n", yytext); }
-[-+]?[0-9]+                                   { printf("integer: %s\n", yytext); }
-[-+]?([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?     { printf("float: %s\n", yytext); }
-[A-Za-z_][A-Za-z_!@#$%&?]*                    { printf("name: %s\n", yytext); }
-.
+(?i:string|char|boolean)                      return KEYWORD;
+[,;]                                          return SEP;
+(=|<|>|<=|>=|<>)                              return BIN_EQU;
+(?i:and|or|xor|imp|eqv)                       return BIN_LOG;
+(?i:mod)                                      return BIN_ARI;
+[\+\-]                                        return BIN_ADD;
+[\*\/\\]                                      return BIN_MUL;
+[\^]                                          return BIN_POW;
+(?i:not)                                      return UNA_LOG;
+(?i:true|false)                               return BOOL;
+{STR}                                         return STRING;
+{INT}&                { yylval.l = strtol(pop(yytext, 1), NULL, 0); return LONG; }
+{INT}                 { yylval.i = (int) strtol(yytext, NULL, 0); return INTEGER; }
+{FLT}#                { yylval.d = strtod(pop(yytext, 1), NULL, 0); return DOUBLE; }
+{FLT}                 { yylval.f = strtof(yytext, NULL, 0); return SINGLE; }
+{A}({A}|{D})*{TYP}?   { yylval.s = strdup(yytext); return ID; }
+.                     error(line, yytext);
 
 %%
+
+void error(int l, char *s) {
+  printf("l%d: unreconized character %s", l, s);
+}
