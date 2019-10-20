@@ -4,6 +4,7 @@ parser.tab.h
 parser.tab.c
 scanner
 parser
+main
 
 # Prerequisites
 *.d
