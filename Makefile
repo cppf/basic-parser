@@ -5,4 +5,3 @@ build:
 
 clean:
 	@rm -f main parser.tab.h parser.tab.c lex.yy.c
-	@rm -f main
