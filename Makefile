@@ -1,7 +1,7 @@
 build:
-	@flex scanner.l
-	@bison -d parser.y
-	@gcc -o main main.c parser.tab.c lex.yy.c -lfl
+	@flex main.l
+	@bison -d main.y
+	@g++ main.cpp main.tab.c lex.yy.c -ll
 
 clean:
-	@rm -f main parser.tab.h parser.tab.c lex.yy.c
+	@rm -f main main.tab.h main.tab.c lex.yy.c
