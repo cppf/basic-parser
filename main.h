@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <list>
 
 using namespace std;
 
@@ -24,12 +25,51 @@ struct Value {
     double  d;
     string *s;
   } v;
+
+  string str() { switch (t) {
+    case VOID:    return string("void");
+    case BOOL:    return string(v.b? "true" : "false");
+    case INTEGER: return to_string(v.i);
+    case LONG:    return to_string(v.l);
+    case SINGLE:  return to_string(v.f);
+    case DOUBLE:  return to_string(v.d);
+    case STRING:  return *v.s;
+  }}
 };
 
 
 struct Ast {
+  virtual string str() = 0;
   virtual Value eval() = 0;
 };
+
+struct Literal : Ast {
+  Value v;
+
+  Literal(Value _v) { v = _v; }
+  string str() { return v.str(); } 
+  Value eval() { return v; }
+};
+
+
+struct Apply : Ast {
+  string x;
+  list<Ast*> ps;
+
+  Apply(string _x, list<Ast*> _ps) { x = _x; ps = _ps; }
+  string str() {
+    string a = "(";
+    a += x;
+    for (const auto& p : ps) {
+      a += " ";
+      a += p->str();
+    }
+    a += ")";
+    return a;
+  }
+  Value eval() { return {VOID}; }
+};
+
 
 struct Neg : Ast {
   Ast *x;

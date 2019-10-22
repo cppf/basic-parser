@@ -4,4 +4,4 @@ build:
 	@g++ main.cpp main.tab.c lex.yy.c -ll
 
 clean:
-	@rm -f main main.tab.h main.tab.c lex.yy.c
+	@rm -f a.out main.tab.h main.tab.c lex.yy.c

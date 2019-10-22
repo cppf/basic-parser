@@ -1,4 +1,5 @@
 %{
+#include "main.h"
 #include "main.tab.h"
 #include <stdlib.h>
 #include <string.h>
@@ -19,8 +20,28 @@ FLT [-+]?({D}*\.)?{D}+([eE]{INT})?
 STR \"(\\.|[^"\\])*\"
 
 %%
-[ \t]             ;
-\r?\n             { line++; return BR; }
+[ \t]     ;
+\r?\n     { line++; return BR; }
+(?i:and)  return AND;
+(?i:or)   return OR;
+(?i:xor)  return XOR;
+(?i:imp)  return IMP;
+(?i:eqv)  return EQV;
+(?i:not)  return NOT;
+(?i:mod)  return MOD;
+\=      return EQ;
+\<      return LT;
+\>      return GT;
+\<\=    return LE;
+\>\=    return GE;
+\<\>    return NE;
+\+      return ADD;
+\-      return SUB;
+\*      return MUL;
+\/      return DIV;
+\\      return IDIV;
+\^      return POW;
+[\(\)]  return yytext[0];
 (?i:true|false)   { yylval.b = strcmp(lower(yytext), "true") == 0; return BOOLV; }
 {INT}             { yylval.i = atoi(yytext); return INTEGERV; }
 {FLT}&            { yylval.l = atol(yytext); return LONGV; }
