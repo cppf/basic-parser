@@ -1,7 +1,14 @@
 %{
 #include "main.tab.h"
-#include "main.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 int line = 0;
+char *lower(char*);
+char *pop(char*, int);
+char *unesc(char*);
+char unescCode(char);
 %}
 
 D   [0-9]
@@ -12,78 +19,62 @@ FLT [-+]?({D}*\.)?{D}+([eE]{INT})?
 STR \"(\\.|[^"\\])*\"
 
 %%
-[ \t]                   ;
-\n                      { line++; return BR; }
-\'[^\n]*                return COMMENT;
-(?i:rem)[\ \t]+[^\n]*   return COMMENT;
-(?i:declare)    return DECLARE;
-(?i:sub)        return SUB;
-(?i:function)   return FUNCTION;
-(?i:type)       return TYPE;
-(?i:end)        return END;
-(?i:dim)        return DIM;
-(?i:shared)     return SHARED;
-(?i:redim)      return REDIM;
-(?i:static)     return STATIC;
-(?i:let)        return LET;
-(?i:const)      return CONST;
-(?i:input)      return INPUT;
-(?i:print)      return PRINT;
-(?i:using)      return USING;
-(?i:open)       return OPEN;
-(?i:access)     return ACCESS;
-(?i:read)       return READ;
-(?i:write)      return WRITE;
-(?i:close)      return CLOSE;
-(?i:output)     return OUTPUT;
-(?i:random)     return RANDOM;
-(?i:binary)     return BINARY;
-(?i:append)     return APPEND;
-(?i:goto)       return GOTO;
-(?i:gosub)      return GOSUB;
-(?i:return)     return RETURN;
-(?i:exit)       return EXIT;
-(?i:if)         return IF;
-(?i:then)       return THEN;
-(?i:elseif)     return ELSEIF;
-(?i:else)       return ELSE;
-(?i:endif)      return ENDIF;
-(?i:select)     return SELECT;
-(?i:case)       return CASE;
-(?i:for)        return FOR;
-(?i:to)         return TO;
-(?i:step)       return STEP;
-(?i:next)       return NEXT;
-(?i:while)      return WHILE;
-(?i:wend)       return WEND;
-(?i:do)         return DO;
-(?i:loop)       return LOOP;
-(?i:until)      return UNTIL;
-(?i:as)         return AS;
-(?i:bool)       return BOOL;
-(?i:integer)    return INTEGER;
-(?i:long)       return LONG;
-(?i:single)     return SINGLE;
-(?i:double)     return DOUBLE;
-(?i:string)     return STRING;
-[,;]                    return SEP;
-(=|<|>|<=|>=|<>)        return BIN_EQU;
-(?i:and|or|xor|imp|eqv) return BIN_LOG;
-(?i:mod)                return BIN_ARI;
-[\+\-]                  return BIN_ADD;
-[\*\/\\]                return BIN_MUL;
-[\^]                    return BIN_POW;
-(?i:not)                return UNA_LOG;
-(?i:true|false)         { yylval.b = strcmp(lower(yytext), "true")==0; return BOOL; }
-{STR}                   return STRING;
-{INT}&                { yylval.l = strtol(pop(yytext, 1), NULL, 0); return LONG; }
-{INT}                 { yylval.i = (int) strtol(yytext, NULL, 0); return INTEGER; }
-{FLT}#                { yylval.d = strtod(pop(yytext, 1), NULL, 0); return DOUBLE; }
-{FLT}                 { yylval.f = strtof(yytext, NULL, 0); return SINGLE; }
-{A}({A}|{D})*{TYP}?   { yylval.s = strdup(yytext); return ID; }
-.                     error(line, yytext);
+[ \t]             ;
+\r?\n             { line++; return BR; }
+(?i:true|false)   { yylval.b = strcmp(lower(yytext), "true") == 0; return BOOLV; }
+{INT}             { yylval.i = atoi(yytext); return INTEGERV; }
+{FLT}&            { yylval.l = atol(yytext); return LONGV; }
+{FLT}             { yylval.f = (float) atof(yytext); return SINGLEV; }
+{FLT}#            { yylval.d = atof(yytext); return DOUBLEV; }
+{STR}             { yylval.s = unesc(pop(yytext+1, 1)); return STRINGV; }
+.
 
 %%
-void error(int l, char *s) {
-  printf("l%d: unreconized character %s", l, s);
+// lower: lowercase characters in place
+char *lower(char *s) {
+  for(char *d=s; *d; d++)
+    *d = tolower(*d);
+  return s;
 }
+
+// pop: remove n chars from end of string
+char *pop(char *s, int n) {
+  s[strlen(s) - n] = '\0';
+  return s;
+}
+
+// unesc: unescape string in place
+char *unesc(char *s) {
+  char buff[4];
+  char *_s = s, *d = s;
+  for(; *s; s++, d++) {
+    if (*s != '\\') { *d = *s; continue; }
+    if (s[1]>='0' && s[1]<='7') {
+      strncpy(buff, s+1, 3);
+      *d = (char) strtol(buff, NULL, 8);
+      s += *d > 64? 3 : (*d > 8? 2 : 1);
+    } else if (s[1] == 'x') {
+      strncpy(buff, s+2, 2);
+      *d = (char) strtol(buff, NULL, 16);
+      s += strlen(buff)+1;
+    } else {
+      *d = unescCode(s[1]);
+      s++;
+    }
+  }
+  *d = '\0';
+  return _s;
+}
+
+// unescCode: unescape character code
+char unescCode(char c) { switch(c) {
+  case 'a': return '\a';
+  case 'b': return '\b';
+  case 'e': return '\e';
+  case 'f': return '\f';
+  case 'n': return '\n';
+  case 'r': return '\r';
+  case 't': return '\t';
+  case 'v': return '\v';
+  default: return c;
+}}

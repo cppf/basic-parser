@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <list>
-#include <map>
 
 using namespace std;
 
@@ -13,9 +11,7 @@ enum Type {
   LONG,
   SINGLE,
   DOUBLE,
-  STRING,
-  // array?
-  // custom?
+  STRING
 };
 
 struct Value {
@@ -26,64 +22,32 @@ struct Value {
     long    l;
     float   f;
     double  d;
-    string  s;
+    string *s;
   } v;
 };
 
-enum Kind {
-  VBOOL,
-  VINTEGER,
-  VLONG,
-  VSINGLE,
-  VDOUBLE,
-  VSTRING,
-  KBOOL,
-  KINTEGER,
-  KLONG,
-  KSINGLE,
-  KDOUBLE,
-  KSTRING,
-  ID,
-  IF,
-  LET,
-  FUNCTION,
-  APPLY,
-};
 
 struct Ast {
-  Kind k;
-  union {
-    bool    b;
-    int     i;
-    long    l;
-    float   f;
-    double  d;
-    string  s;
-    char   *id;
-    struct {
-      Ast *c;
-      Ast *t;
-      Ast *e;
-    } ifte;
-    struct {
-      Ast *id;
-      Ast *x;
-    } let;
-    struct {
-      Ast         *id;
-      list<Ast[2]> fs;
-    } function;
-    struct {
-      Ast      *id;
-      list<Ast> ps;
-    } apply;
-  } v;
+  virtual Value eval() = 0;
 };
 
+struct Neg : Ast {
+  Ast *x;
 
+  Neg(Ast *_x) { x = _x; }
+  Value eval() {
+    Value p = x->eval();
+    switch (p.t) {
+      case INTEGER: return {INTEGER, {i: -p.v.i}};
+      case LONG: return {LONG, {l: -p.v.l}};
+      case SINGLE: return {SINGLE, {f: -p.v.f}};
+      case DOUBLE: return {DOUBLE, {d: -p.v.d}};
+      default: throw 0;
+    }
+  }
+};
 
-
-
+/*
 // pop: remove n chars from end of string
 char *pop(char *s, int n) {
   s[strlen(s) - n] = '\0';
@@ -118,3 +82,4 @@ char *unescape(char *s) {
   }
   return _s;
 }
+*/

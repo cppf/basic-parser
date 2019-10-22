@@ -1,6 +1,9 @@
-#include <stdio.h>
+#include "main.h"
 
+using namespace std;
+extern int yyparse();
 
-int main(int argc, char ** argv) {
-  printf("%d: %f\n", x.t, x.v.f);
+int main(int argc, char **argv) {
+  yyparse();
+  return 0;
 }
