@@ -1,5 +1,5 @@
 %{
-#include "main.h"
+#include "mast.h"
 
 Ast *yyroot;
 extern int yylex();
@@ -7,8 +7,6 @@ void yyerror(const char *s);
 %}
 
 %token BOOLV INTEGERV LONGV SINGLEV DOUBLEV STRINGV
-// %token AND OR XOR IMP EQV NOT EQ LT GT LE GE NE
-// %token MOD ADD SUB MUL DIV IDIV POW
 %token BR
 
 %left AND OR XOR IMP EQV

@@ -1,5 +1,5 @@
 %{
-#include "main.h"
+#include "mast.h"
 #include "main.tab.h"
 #include <stdlib.h>
 #include <string.h>
