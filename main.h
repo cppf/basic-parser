@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <list>
 #include <string>
 #include <algorithm>
@@ -22,7 +23,7 @@ struct Value {
   Value(long x) { t = INT; v.i = x; }
   Value(double x) { t = DEC; v.d = x; }
   Value(string *x) { t = STR; v.s = x; }
-  long b() { switch(t) {
+  bool b() { switch(t) {
     case BOL: return v.b;
   }}
   long i() { switch(t) {
@@ -68,20 +69,33 @@ struct Id : Ast {
   Value eval() { return (long)0; }
 };
 
-struct Pow : Ast {
+typedef Value (*Fn1)(Value);
+extern map<Fn1, string> pname1;
+struct Op1 : Ast {
+  Fn1 f;
+  Ast *x;
+
+  Op1(Fn1 _f, Ast *_x) { f = _f; x = _x; }
+  void tos(string& s) { s+="("; s+=pname1[f]; s+=" "; x->tos(s); s+=")"; }
+  Value eval() { return f(x->eval()); }
+};
+#define FN1(n) Value n(Value)
+FN1(pnot);
+
+typedef Value (*Fn2)(Value, Value);
+extern map<Fn2, string> pname2;
+struct Op2 : Ast {
+  Fn2 f;
   Ast *x, *y;
 
-  Pow(Ast *_x, Ast *_y) { x = _x, y = _y; }
-  void tos(string& s) { s+="(^ "; x->tos(s); s+=" "; y->tos(s); s+=")"; }
-  Value eval() {
-    Value a = x->eval(), b = y->eval();
-    switch (max(a.t, b.t)) {
-      case INT: return (long) pow(a.i(), b.i());
-      case DEC: return pow(a.d(), b.d());
-    }
-  }
+  Op2(Fn2 _f, Ast *_x, Ast *_y) { f = _f; x = _x; y = _y; }
+  void tos(string& s) { s+="("; s+=pname2[f]; s+=" "; x->tos(s); s+=" "; y->tos(s); s+=")"; }
+  Value eval() { return f(x->eval(), y->eval()); }
 };
-
+#define FN2(n) Value n(Value, Value)
+FN2(pand); FN2(por); FN2(pxor); FN2(pimp); FN2(peqv);
+FN2(peq); FN2(plt); FN2(pgt); FN2(ple); FN2(pge); FN2(pne);
+FN2(pmod); FN2(padd); FN2(psub); FN2(pmul); FN2(pdiv); FN2(pidiv); FN2(ppow);
 
 struct Apply : Ast {
   string x;
