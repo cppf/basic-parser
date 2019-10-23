@@ -3,7 +3,7 @@
 using namespace std;
 extern Ast *yyroot;
 extern int yyparse();
-map<Fn1, string> pname1 = {{pnot, "not"}};
+map<Fn1, string> pname1 = {{pnot, "not"}, {ppos, "+"}, {pneg, "-"}};
 map<Fn2, string> pname2 = {
   {pand, "and"}, {por, "or"}, {pxor, "xor"}, {pimp, "imp"}, {peqv, "eqv"},
   {peq, "="}, {plt, "<"}, {pgt, ">"}, {ple, "<="}, {pge, ">="}, {pne, "<>"},
@@ -87,6 +87,16 @@ Value pne(Value x, Value y) { switch (max(x.t, y.t)) {
 Value pmod(Value x, Value y) { switch (max(x.t, y.t)) {
   case INT: return x.i() % y.i();
   case DEC: return fmod(x.d(), y.d());
+}}
+
+Value ppos(Value x) { switch(x.t) {
+  case INT: return x.i();
+  case DEC: return x.d();
+}}
+
+Value pneg(Value x) { switch(x.t) {
+  case INT: return -x.i();
+  case DEC: return -x.d();
 }}
 
 // not sure about strings: memory leak?

@@ -15,8 +15,8 @@ char unescCode(char);
 D   [0-9]
 A   [A-Za-z_]
 TYP [!@#$%&?]
-INT [-+]?{D}+
-FLT [-+]?({D}*\.)?{D}+([eE]{INT})?
+INT {D}+
+FLT ({D}*\.)?{D}+([eE]{INT})?
 STR \"(\\.|[^"\\])*\"
 
 %%

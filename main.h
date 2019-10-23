@@ -80,7 +80,7 @@ struct Op1 : Ast {
   Value eval() { return f(x->eval()); }
 };
 #define FN1(n) Value n(Value)
-FN1(pnot);
+FN1(pnot); FN1(ppos); FN1(pneg);
 
 typedef Value (*Fn2)(Value, Value);
 extern map<Fn2, string> pname2;
