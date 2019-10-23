@@ -1,54 +1,85 @@
 #pragma once
-#include <string>
 #include <list>
+#include <string>
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 
 
-enum Type {
-  VOID,
-  BOOL,
-  INTEGER,
-  LONG,
-  SINGLE,
-  DOUBLE,
-  STRING
-};
-
+enum Type {BOL, INT, DEC, STR};
 struct Value {
   Type t;
   union {
     bool    b;
-    int     i;
-    long    l;
-    float   f;
+    long    i;
     double  d;
     string *s;
   } v;
 
-  string str() { switch (t) {
-    case VOID:    return string("void");
-    case BOOL:    return string(v.b? "true" : "false");
-    case INTEGER: return to_string(v.i);
-    case LONG:    return to_string(v.l);
-    case SINGLE:  return to_string(v.f);
-    case DOUBLE:  return to_string(v.d);
-    case STRING:  return *v.s;
+  Value() {}
+  Value(bool x) { t = BOL; v.b = x; }
+  Value(long x) { t = INT; v.i = x; }
+  Value(double x) { t = DEC; v.d = x; }
+  Value(string *x) { t = STR; v.s = x; }
+  long b() { switch(t) {
+    case BOL: return v.b;
+  }}
+  long i() { switch(t) {
+    case BOL: return v.b;
+    case INT: return v.i;
+  }}
+  double d() { switch(t) {
+    case BOL: return v.b;
+    case INT: return v.i;
+    case DEC: return v.d;
+  }}
+  string s() { switch (t) {
+    case BOL: return to_string(v.b);
+    case INT: return to_string(v.i);
+    case DEC: return to_string(v.d);
+    case STR: return *v.s;
   }}
 };
 
 
 struct Ast {
-  virtual string str() = 0;
+  virtual void tos(string& s) = 0;
   virtual Value eval() = 0;
+  string s() {
+    string s;
+    tos(s); return s;
+  }
 };
 
 struct Literal : Ast {
-  Value v;
+  Value x;
 
-  Literal(Value _v) { v = _v; }
-  string str() { return v.str(); } 
-  Value eval() { return v; }
+  Literal(Value _x) { x = _x; }
+  void tos(string& s) { s+=x.s(); }
+  Value eval() { return x; }
+};
+
+struct Id : Ast {
+  string x;
+
+  Id(string _x) { x = _x; }
+  void tos(string& s) { s+=x; }
+  Value eval() { return (long)0; }
+};
+
+struct Pow : Ast {
+  Ast *x, *y;
+
+  Pow(Ast *_x, Ast *_y) { x = _x, y = _y; }
+  void tos(string& s) { s+="(^ "; x->tos(s); s+=" "; y->tos(s); s+=")"; }
+  Value eval() {
+    Value a = x->eval(), b = y->eval();
+    switch (max(a.t, b.t)) {
+      case INT: return (long) pow(a.i(), b.i());
+      case DEC: return pow(a.d(), b.d());
+    }
+  }
 };
 
 
@@ -57,69 +88,16 @@ struct Apply : Ast {
   list<Ast*> ps;
 
   Apply(string _x, list<Ast*> _ps) { x = _x; ps = _ps; }
-  string str() {
+  string s() {
     string a = "(";
     a += x;
     for (const auto& p : ps) {
       a += " ";
-      a += p->str();
+      a += p->s();
     }
     a += ")";
     return a;
   }
-  Value eval() { return {VOID}; }
+  void tos(string& s) {}
+  Value eval() { return (long)0; }
 };
-
-
-struct Neg : Ast {
-  Ast *x;
-
-  Neg(Ast *_x) { x = _x; }
-  Value eval() {
-    Value p = x->eval();
-    switch (p.t) {
-      case INTEGER: return {INTEGER, {i: -p.v.i}};
-      case LONG: return {LONG, {l: -p.v.l}};
-      case SINGLE: return {SINGLE, {f: -p.v.f}};
-      case DOUBLE: return {DOUBLE, {d: -p.v.d}};
-      default: throw 0;
-    }
-  }
-};
-
-/*
-// pop: remove n chars from end of string
-char *pop(char *s, int n) {
-  s[strlen(s) - n] = '\0';
-  return s;
-}
-
-// lower: lowercase characters in place
-char *lower(char *s) {
-  for(char *d=s; *d; d++) { *d = tolower(*d); }
-  return s;
-}
-
-
-char *unescape(char *s) {
-  char *_s = s;
-  for(char *d=s; *s; s++) {
-    if (*s == '\\') {switch(s[1]) {
-      case 'a': *d = '\a'; s++;
-      case 'b': *d = '\b'; s++;
-      case 'e': *d = '\e'; s++;
-      case 'f': *d = '\f'; s++;
-      case 'n': *d = '\n'; s++;
-      case 'r': *d = '\r'; s++;
-      case 't': *d = '\t'; s++;
-      case 'v': *d = '\v'; s++;
-      case '\\': *d = '\\'; s++;
-      case '\'': *d = '\''; s++;
-      case '\"': *d = '\"'; s++;
-      case '?': *d = '\?'; s++;
-      default: *d = *s; d++;
-    }}
-  }
-  return _s;
-}
-*/

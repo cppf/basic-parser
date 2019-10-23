@@ -6,6 +6,7 @@ extern int yyparse();
 
 int main(int argc, char **argv) {
   yyparse();
-  printf("%s\n", yyroot->str().c_str());
+  printf("%s\n", yyroot->s().c_str());
+  printf("%ld\n", yyroot->eval().i());
   return 0;
 }

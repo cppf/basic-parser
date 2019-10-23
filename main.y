@@ -54,14 +54,14 @@ e:  e AND e   { $$ = new Apply("and", {$1, $3}); }
   | e MUL e   { $$ = new Apply("*", {$1, $3}); }
   | e DIV e   { $$ = new Apply("/", {$1, $3}); }
   | e IDIV e  { $$ = new Apply("\\", {$1, $3}); }
-  | e POW e   { $$ = new Apply("^", {$1, $3}); }
+  | e POW e   { $$ = new Pow($1, $3); }
   | '(' e ')' { $$ = $2; }
-  | BOOLV     { $$ = new Literal({BOOL, {b: yylval.b}}); }
-  | INTEGERV  { $$ = new Literal({INTEGER, {i: yylval.i}}); }
-  | LONGV     { $$ = new Literal({LONG, {l: yylval.l}}); }
-  | SINGLEV   { $$ = new Literal({SINGLE, {f: yylval.f}}); }
-  | DOUBLEV   { $$ = new Literal({DOUBLE, {d: yylval.d}}); }
-  | STRINGV   { $$ = new Literal({STRING, {s: new string(yylval.s)}}); }
+  | BOOLV     { $$ = new Literal(yylval.b); }
+  | INTEGERV  { $$ = new Literal((long)yylval.i); }
+  | LONGV     { $$ = new Literal(yylval.l); }
+  | SINGLEV   { $$ = new Literal(yylval.f); }
+  | DOUBLEV   { $$ = new Literal(yylval.d); }
+  | STRINGV   { $$ = new Literal(new string(yylval.s)); }
   ;
 
 %%
