@@ -8,6 +8,7 @@ using namespace std;
 typedef Value (*Fn1)(Value);
 typedef Value (*Fn2)(Value, Value);
 
+extern map<string, Value> env;
 extern map<Fn1, string> pname1;
 extern map<Fn2, string> pname2;
 

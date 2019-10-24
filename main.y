@@ -6,8 +6,7 @@ extern int yylex();
 void yyerror(const char *s);
 %}
 
-%token BOOLV INTEGERV LONGV SINGLEV DOUBLEV STRINGV
-%token BR
+%token BOOLV INTEGERV LONGV SINGLEV DOUBLEV STRINGV ID BR
 
 %left AND OR XOR IMP EQV
 %left NOT
@@ -27,12 +26,16 @@ void yyerror(const char *s);
   Ast    *a;
 }
 
-%type<a> e
-%start s
+%type<a> p s x e
+%start p
 
 %%
-s:      { yyroot = NULL; }
-  | e   { yyroot = $1; }
+p:    { yyroot = NULL; }
+  | s { yyroot = $1; }
+  ;
+s:  x EQ e  { $$ = new Let($1, $3); }
+  ;
+x:  ID      { $$ = new Id(yylval.s); }
   ;
 e:  e AND e   { $$ = new Op2(pand, $1, $3); }
   | e OR e    { $$ = new Op2(por, $1, $3); }
@@ -62,6 +65,7 @@ e:  e AND e   { $$ = new Op2(pand, $1, $3); }
   | SINGLEV   { $$ = new Literal(yylval.f); }
   | DOUBLEV   { $$ = new Literal(yylval.d); }
   | STRINGV   { $$ = new Literal(new string(yylval.s)); }
+  | ID        { $$ = new Id(yylval.s); }
   ;
 
 %%

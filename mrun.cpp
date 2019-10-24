@@ -5,6 +5,9 @@
 using namespace std;
 
 
+// environment:
+map<string, Value> env;
+
 // primitive names:
 map<Fn1, string> pname1 = {{pnot, "not"}, {ppos, "+"}, {pneg, "-"}};
 map<Fn2, string> pname2 = {
@@ -15,7 +18,6 @@ map<Fn2, string> pname2 = {
 };
 
 
-// primitive functions:
 Value pand(Value x, Value y) { switch (max(x.t, y.t)) {
   case BOL: return x.b() && y.b();
   case INT: return x.i() & y.i();

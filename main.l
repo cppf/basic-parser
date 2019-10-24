@@ -48,6 +48,7 @@ STR \"(\\.|[^"\\])*\"
 {FLT}             { yylval.f = (float) atof(yytext); return SINGLEV; }
 {FLT}#            { yylval.d = atof(yytext); return DOUBLEV; }
 {STR}             { yylval.s = unesc(pop(yytext+1, 1)); return STRINGV; }
+{A}({A}|{D})*{TYP}?   { yylval.s = yytext; return ID; }
 .
 
 %%

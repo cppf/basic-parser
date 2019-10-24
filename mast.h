@@ -29,7 +29,16 @@ struct Id : Ast {
 
   Id(string _x) { x = _x; }
   void tos(string& s) { s+=x; }
-  Value eval() { return (long)0; }
+  Value eval() { return env[x]; }
+};
+
+struct Let : Ast {
+  string x;
+  Ast *e;
+
+  Let(Ast *_x, Ast *_e) { x = _x->s(); e = _e; }
+  void tos(string& s) { s+="(let "; s+=x; s+=" "; e->tos(s); s+=")"; }
+  Value eval() { return env[x] = e->eval(); }
 };
 
 struct Op1 : Ast {

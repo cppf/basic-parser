@@ -32,7 +32,7 @@ struct Value {
     case DEC: return v.d;
   }}
   string s() { switch (t) {
-    case BOL: return to_string(v.b);
+    case BOL: return v.b? "true" : "false";
     case INT: return to_string(v.i);
     case DEC: return to_string(v.d);
     case STR: return *v.s;
