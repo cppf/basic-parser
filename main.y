@@ -26,7 +26,7 @@ void yyerror(const char *s);
   Ast    *a;
 }
 
-%type<a> p s x e
+%type<a> p s x e le
 %start p
 
 %%
@@ -56,6 +56,7 @@ e:  e AND e   { $$ = new Op2(pand, $1, $3); }
   | e DIV e   { $$ = new Op2(pdiv, $1, $3); }
   | e IDIV e  { $$ = new Op2(pidiv, $1, $3); }
   | e POW e   { $$ = new Op2(ppow, $1, $3); }
+  | x '(' le ')'   { $$ = new Fn($1, $3); }
   | '(' e ')' { $$ = $2; }
   | ADD e     { $$ = new Op1(ppos, $2); }
   | SUB e     { $$ = new Op1(pneg, $2); }
@@ -66,6 +67,10 @@ e:  e AND e   { $$ = new Op2(pand, $1, $3); }
   | DOUBLEV   { $$ = new Literal(yylval.d); }
   | STRINGV   { $$ = new Literal(new string(yylval.s)); }
   | ID        { $$ = new Id(yylval.s); }
+  ;
+le:           { $$ = new Exps(); }
+  | e         { $$ = new Exps({$1}); }
+  | le ',' e  { $$ = ((Exps*)$1)->add($3); }
   ;
 
 %%

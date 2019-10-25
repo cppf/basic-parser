@@ -41,7 +41,7 @@ STR \"(\\.|[^"\\])*\"
 \/      return DIV;
 \\      return IDIV;
 \^      return POW;
-[\(\)]  return yytext[0];
+[\(\)\,]  return yytext[0];
 (?i:true|false)   { yylval.b = strcmp(lower(yytext), "true") == 0; return BOOLV; }
 {INT}             { yylval.i = atoi(yytext); return INTEGERV; }
 {FLT}&            { yylval.l = atol(yytext); return LONGV; }

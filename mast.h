@@ -2,6 +2,7 @@
 #include "mval.h"
 #include "mrun.h"
 #include <list>
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -57,6 +58,30 @@ struct Op2 : Ast {
   Op2(Fn2 _f, Ast *_x, Ast *_y) { f = _f; x = _x; y = _y; }
   void tos(string& s) { s+="("; s+=pname2[f]; s+=" "; x->tos(s); s+=" "; y->tos(s); s+=")"; }
   Value eval() { return f(x->eval(), y->eval()); }
+};
+
+struct Exps : Ast {
+  vector<Ast*> xs;
+
+  Exps() { }
+  Exps(vector<Ast*> _xs) { printf("hello1"); xs = _xs; }
+  Ast* add(Ast *x) { printf("hello2"); xs.push_back(x); }
+  void tos(string& s) { }
+  Value eval() { return (long)0; }
+};
+
+struct Fn : Ast {
+  string x;
+  vector<Ast*> ps;
+
+  Fn(Ast* _x, Ast* _ps) { x = _x->s(); ps = ((Exps*)_ps)->xs; }
+  void tos(string& s) {
+    s+="("; s+=x;
+    for (auto const& p : ps) { p->tos(s); s+=", "; }
+    if (ps.size()>0) s.resize(s.size()-2);
+    s+=")";
+  }
+  Value eval() { return pmod(ps[0]->eval(), ps[1]->eval()); }
 };
 
 struct Apply : Ast {
