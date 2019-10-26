@@ -9,6 +9,16 @@ using namespace std;
 map<string, Value> env;
 
 // primitive names:
+FN0(fsystem);
+map<string, Fn0> f0map = {
+  {"system", fsystem}
+};
+FN1(fatn); FN1(fcos); FN1(fsin); FN1(ftan); FN1(fsqr);
+FN1(fexp); FN1(flog); FN1(fabs); FN1(ffix); FN1(fint);
+map<string, Fn1> f1map = {
+  {"atn", fatn}, {"cos", fcos}, {"sin", fsin}, {"tan", ftan}, {"sqr", fsqr},
+  {"exp", fexp}, {"log", flog}, {"abs", fabs}, {"fix", ffix}, {"int", fint}
+};
 map<Fn1, string> pname1 = {{pnot, "not"}, {ppos, "+"}, {pneg, "-"}};
 map<Fn2, string> pname2 = {
   {pand, "and"}, {por, "or"}, {pxor, "xor"}, {pimp, "imp"}, {peqv, "eqv"},
@@ -224,3 +234,11 @@ Value fchr(Value x) { switch (x.t) {
   s[0] = (char) x.d();
   return s;
 }}
+
+Value fsystem() {
+  exit(0);
+  map<string, Fn1> f2map = {
+    {}
+  };
+  return false;
+}

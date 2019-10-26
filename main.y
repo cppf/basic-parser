@@ -56,7 +56,7 @@ e:  e AND e   { $$ = new Call2(pand, $1, $3); }
   | e DIV e   { $$ = new Call2(pdiv, $1, $3); }
   | e IDIV e  { $$ = new Call2(pidiv, $1, $3); }
   | e POW e   { $$ = new Call2(ppow, $1, $3); }
-  | x ps      { $$ = new Fn($1, $2); }
+  | x ps      { $$ = new Call($1, $2); }
   | '(' e ')' { $$ = $2; }
   | ADD e     { $$ = new Call1(ppos, $2); }
   | SUB e     { $$ = new Call1(pneg, $2); }
@@ -66,13 +66,13 @@ e:  e AND e   { $$ = new Call2(pand, $1, $3); }
   | SINGLEV   { $$ = new Litr(yylval.f); }
   | DOUBLEV   { $$ = new Litr(yylval.d); }
   | STRINGV   { $$ = new Litr(new string(yylval.s)); }
-  | ID        { $$ = new Id(yylval.s); }
+  | x         { $$ = $1; }
   ;
-ps: '(' ')'     { $$ = new Exps(); }
+ps: '(' ')'     { $$ = new Asts(); }
   | '(' le ')'  { $$ = $2; }
   ;
-le: e           { $$ = new Exps({$1}); }
-  | le ',' e    { $$ = ((Exps*)$1)->add($3); }
+le: e           { $$ = new Asts({$1}); }
+  | le ',' e    { $$ = ((Asts*)$1)->add($3); }
   ;
 %%
 void yyerror(const char *s) {

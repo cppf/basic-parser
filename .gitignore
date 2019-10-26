@@ -1,7 +1,9 @@
 # Generated files
 *.yy.c
+*.yy.cpp
 *.tab.h
 *.tab.c
+*.tab.cpp
 main
 
 # Editor files

@@ -5,12 +5,18 @@
 using namespace std;
 
 
+typedef map<string, Value> Env;
+typedef Value (*Fn0)();
 typedef Value (*Fn1)(Value);
 typedef Value (*Fn2)(Value, Value);
 
 extern map<string, Value> env;
+extern map<string, Fn0> f0map;
+extern map<string, Fn1> f1map;
 extern map<Fn1, string> pname1;
 extern map<Fn2, string> pname2;
+
+#define FN0(f) Value f()
 
 #define FN1(f) Value f(Value)
 FN1(pnot); FN1(ppos); FN1(pneg);
