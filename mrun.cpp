@@ -127,3 +127,100 @@ Value ppow(Value x, Value y) { switch (max(x.t, y.t)) {
   case INT: return (long) pow(x.i(), y.i());
   case DEC: return pow(x.d(), y.d());
 }}
+
+
+// functions:
+Value fatn(Value x) { switch (x.t) {
+  case INT: case DEC: return atan(x.d());
+}}
+
+Value fcos(Value x) { switch (x.t) {
+  case INT: case DEC: return cos(x.d());
+}}
+
+Value fsin(Value x) { switch (x.t) {
+  case INT: case DEC: return sin(x.d());
+}}
+
+Value ftan(Value x) { switch (x.t) {
+  case INT: case DEC: return tan(x.d());
+}}
+
+Value fsqr(Value x) { switch(x.t) {
+  case INT: case DEC: return sqrt(x.d());
+}}
+
+Value fexp(Value x) { switch (x.t) {
+  case INT: case DEC: return exp(x.d());
+}}
+
+Value flog(Value x) { switch (x.t) {
+  case INT: case DEC: return log(x.d());
+}}
+
+Value fabs(Value x) { switch (x.t) {
+  case INT: return abs(x.i());
+  case DEC: return abs(x.d());
+}}
+
+Value ffix(Value x) { switch (x.t) {
+  case INT: case DEC: return (long) x.d();
+}}
+
+Value fint(Value x) { switch (x.t) {
+  case INT: case DEC: return (long) floor(x.d());
+}}
+
+// hex$, oct$
+Value fhex(Value x) { switch (x.t) {
+  case INT: case DEC: return new string(to_string((long) x.d()));
+}}
+
+// cint, clng
+Value fcint(Value x) { switch (x.t) {
+  case BOL: case INT: case DEC: return (long) x.d();
+}}
+
+// cdbl, csng
+Value fcdec(Value x) { switch (x.t) {
+  case BOL: case INT: case DEC: return x.d();
+}}
+
+// ucase$
+Value fucase(Value x) { switch (x.t) {
+  case STR: return new string(x.s()); // to uppercase
+}}
+
+// lcase$
+Value flcase(Value x) { switch (x.t) {
+  case STR: return new string(x.s()); // to lowercase
+}}
+
+// string$
+Value fstring(Value l, Value s) { switch (s.t) {
+  case INT: case DEC: return fstring(l, new string(s.s()));
+  case STR: string *a = new string(); char c = s.s()[0];
+  for (int i=l.i(); i>=0; i--) *a+=c;
+  return a;
+}}
+
+// str$
+Value fstr(Value x) {
+  return new string(x.s());
+}
+
+Value fval(Value x) { switch (x.t) {
+  case STR: return strtod(x.s().c_str(), NULL);
+}}
+
+Value fasc(Value x) { switch (x.t) {
+  case STR: return (long) x.s()[0];
+}}
+
+// chr$
+Value fchr(Value x) { switch (x.t) {
+  case INT: case DEC:
+  string *s = new string();
+  s[0] = (char) x.d();
+  return s;
+}}

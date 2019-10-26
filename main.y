@@ -26,7 +26,7 @@ void yyerror(const char *s);
   Ast    *a;
 }
 
-%type<a> p s x e le
+%type<a> p s x e ps le
 %start p
 
 %%
@@ -37,42 +37,43 @@ s:  x EQ e  { $$ = new Let($1, $3); }
   ;
 x:  ID      { $$ = new Id(yylval.s); }
   ;
-e:  e AND e   { $$ = new Op2(pand, $1, $3); }
-  | e OR e    { $$ = new Op2(por, $1, $3); }
-  | e XOR e   { $$ = new Op2(pxor, $1, $3); }
-  | e IMP e   { $$ = new Op2(pimp, $1, $3); }
-  | e EQV e   { $$ = new Op2(peqv, $1, $3); }
-  | NOT e     { $$ = new Op1(pnot, $2); }
-  | e EQ e    { $$ = new Op2(peq, $1, $3); }
-  | e LT e    { $$ = new Op2(plt, $1, $3); }
-  | e GT e    { $$ = new Op2(pgt, $1, $3); }
-  | e LE e    { $$ = new Op2(ple, $1, $3); }
-  | e GE e    { $$ = new Op2(pge, $1, $3); }
-  | e NE e    { $$ = new Op2(pne, $1, $3); }
-  | e MOD e   { $$ = new Op2(pmod, $1, $3); }
-  | e ADD e   { $$ = new Op2(padd, $1, $3); }
-  | e SUB e   { $$ = new Op2(psub, $1, $3); }
-  | e MUL e   { $$ = new Op2(pmul, $1, $3); }
-  | e DIV e   { $$ = new Op2(pdiv, $1, $3); }
-  | e IDIV e  { $$ = new Op2(pidiv, $1, $3); }
-  | e POW e   { $$ = new Op2(ppow, $1, $3); }
-  | x '(' le ')'   { $$ = new Fn($1, $3); }
+e:  e AND e   { $$ = new Call2(pand, $1, $3); }
+  | e OR e    { $$ = new Call2(por, $1, $3); }
+  | e XOR e   { $$ = new Call2(pxor, $1, $3); }
+  | e IMP e   { $$ = new Call2(pimp, $1, $3); }
+  | e EQV e   { $$ = new Call2(peqv, $1, $3); }
+  | NOT e     { $$ = new Call1(pnot, $2); }
+  | e EQ e    { $$ = new Call2(peq, $1, $3); }
+  | e LT e    { $$ = new Call2(plt, $1, $3); }
+  | e GT e    { $$ = new Call2(pgt, $1, $3); }
+  | e LE e    { $$ = new Call2(ple, $1, $3); }
+  | e GE e    { $$ = new Call2(pge, $1, $3); }
+  | e NE e    { $$ = new Call2(pne, $1, $3); }
+  | e MOD e   { $$ = new Call2(pmod, $1, $3); }
+  | e ADD e   { $$ = new Call2(padd, $1, $3); }
+  | e SUB e   { $$ = new Call2(psub, $1, $3); }
+  | e MUL e   { $$ = new Call2(pmul, $1, $3); }
+  | e DIV e   { $$ = new Call2(pdiv, $1, $3); }
+  | e IDIV e  { $$ = new Call2(pidiv, $1, $3); }
+  | e POW e   { $$ = new Call2(ppow, $1, $3); }
+  | x ps      { $$ = new Fn($1, $2); }
   | '(' e ')' { $$ = $2; }
-  | ADD e     { $$ = new Op1(ppos, $2); }
-  | SUB e     { $$ = new Op1(pneg, $2); }
-  | BOOLV     { $$ = new Literal(yylval.b); }
-  | INTEGERV  { $$ = new Literal((long)yylval.i); }
-  | LONGV     { $$ = new Literal(yylval.l); }
-  | SINGLEV   { $$ = new Literal(yylval.f); }
-  | DOUBLEV   { $$ = new Literal(yylval.d); }
-  | STRINGV   { $$ = new Literal(new string(yylval.s)); }
+  | ADD e     { $$ = new Call1(ppos, $2); }
+  | SUB e     { $$ = new Call1(pneg, $2); }
+  | BOOLV     { $$ = new Litr(yylval.b); }
+  | INTEGERV  { $$ = new Litr((long)yylval.i); }
+  | LONGV     { $$ = new Litr(yylval.l); }
+  | SINGLEV   { $$ = new Litr(yylval.f); }
+  | DOUBLEV   { $$ = new Litr(yylval.d); }
+  | STRINGV   { $$ = new Litr(new string(yylval.s)); }
   | ID        { $$ = new Id(yylval.s); }
   ;
-le:           { $$ = new Exps(); }
-  | e         { $$ = new Exps({$1}); }
-  | le ',' e  { $$ = ((Exps*)$1)->add($3); }
+ps: '(' ')'     { $$ = new Exps(); }
+  | '(' le ')'  { $$ = $2; }
   ;
-
+le: e           { $$ = new Exps({$1}); }
+  | le ',' e    { $$ = ((Exps*)$1)->add($3); }
+  ;
 %%
 void yyerror(const char *s) {
   fprintf(stderr, "error: %s\n", s);
