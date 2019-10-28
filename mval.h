@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -11,14 +12,14 @@ struct Value {
     bool    b;
     long    i;
     double  d;
-    string *s;
+    char   *s;
   } v;
 
   Value() {}
-  Value(bool x) { t = BOL; v.b = x; }
-  Value(long x) { t = INT; v.i = x; }
+  Value(bool x)   { t = BOL; v.b = x; }
+  Value(long x)   { t = INT; v.i = x; }
   Value(double x) { t = DEC; v.d = x; }
-  Value(string *x) { t = STR; v.s = x; }
+  Value(char *x)  { t = STR; v.s = x; }
   bool b() { switch(t) {
     case BOL: return v.b;
   }}
@@ -35,6 +36,7 @@ struct Value {
     case BOL: return v.b? "true" : "false";
     case INT: return to_string(v.i);
     case DEC: return to_string(v.d);
-    case STR: return *v.s;
+    case STR: return v.s;
   }}
 };
+typedef map<string, Value> Environment;

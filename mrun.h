@@ -4,17 +4,19 @@
 #include <map>
 #include <vector>
 
+using namespace std;
 
-typedef map<string, Value> Environment;
 
 struct Breakpoint {
   int  step;
   Ast *cond;
+  bool hit(int s, Environment& e);
 };
 
 struct Procedure {
-  map<string, Type> args;
-  vector<string>    exts;
+  string name;
+  vector<string> args;
+  vector<string> exts;
   int step;
 };
 
@@ -30,5 +32,9 @@ struct ExecutionContext {
   vector<int> rets;
   vector<Environment> envs;
   vector<Breakpoint>  brks;
-  Program *prog;
+  Procedure *proc;
+  Program   *prog;
+  int stepInto();
+  int breakpoint();
+  void eval();
 };

@@ -33,8 +33,114 @@ void yyerror(const char *s);
 p:    { yyroot = NULL; }
   | s { yyroot = $1; }
   ;
-s:  x EQ e  { $$ = new Let($1, $3); }
+b:
+    DECLARE SUB x
+  | if
+  | select
   ;
+
+loop:
+    for
+  | while
+  | do
+;
+
+
+
+
+
+if:
+    IF e THEN s
+  | IF e THEN s ELSE s
+  | IF e THEN BR b BR endif
+  | IF e THEN BR b BR elses BR endif
+;
+elses:
+    elseif BR elses
+  | elseif
+  | else
+;
+elseif:
+  ELSEIF e BR b
+;
+else:
+  ELSE BR b
+;
+endif:
+    END IF
+  | ENDIF
+;
+
+
+select:
+  SELECT CASE e BR cases BR END SELECT
+  ;
+cases:
+    case BR cases
+  | case
+  | case_else
+  ;
+case:
+    CASE e BR b
+  | CASE e TO e BR b
+  ;
+case_else:
+    CASE ELSE br b
+  ;
+
+
+for:
+    FOR x EQ e TO e BR b BR NEXT
+  | FOR x EQ e TO e BR b BR NEXT x
+  | FOR x EQ e TO e STEP e BR b BR NEXT
+  | FOR x EQ e TO e STEP e BR b BR NEXT x
+;
+
+
+while:
+    WHILE e BR b BR WEND
+;
+
+
+do:
+    DO WHILE e BR b BR LOOP
+  | DO UNTIL e BR b BR LOOP
+  | DO BR b BR LOOP WHILE e
+  | DO BR b BR LOOP UNTIL e
+;
+
+
+s:  x EQ e  { $$ = new Let($1, $3); }
+  | OPEN e fmode facc AS e
+  | OPEN e, e, e
+  | CLOSE es
+  | CLOSE
+  | GOTO l
+  | GOSUB l
+  | RETURN
+  | RETURN l
+  | EXIT efrom
+  ;
+fmode:
+    OUTPUT
+  | INPUT
+  | RANDOM
+  | BINARY
+  | APPEND
+;
+facc:
+    READ
+  | WRITE
+  | READ WRITE
+;
+efrom:
+    DEF
+  | DO
+  | FOR
+  | SUB
+  | FUNCTION
+;
+
 x:  ID      { $$ = new Id(yylval.s); }
   ;
 e:  e AND e   { $$ = new Call2(pand, $1, $3); }

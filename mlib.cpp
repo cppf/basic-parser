@@ -10,15 +10,15 @@ int addr;
 vector<int> stack;
 map<string, Value> env;
 
-map<string, Fn0> f0map = {
+map<string, Proc0> p0map = {
   {"system", fsystem}
 };
-map<string, Fn1> f1map = {
+map<string, Proc1> p1map = {
   {"not", pnot}, {"+", ppos}, {"-", pneg},
   {"atn", fatn}, {"cos", fcos}, {"sin", fsin}, {"tan", ftan}, {"sqr", fsqr},
   {"exp", fexp}, {"log", flog}, {"abs", fabs}, {"fix", ffix}, {"int", fint}
 };
-map<string, Fn2> f2map = {
+map<string, Proc2> f2map = {
   {"and", pand}, {"or", por}, {"xor", pxor}, {"imp", pimp}, {"eqv", peqv},
   {"=", peq}, {"<", plt}, {">", pgt}, {"<=", ple}, {">=", pge}, {"<>", pne},
   {"mod", pmod}, {"+", padd}, {"-", psub}, {"*", pmul}, {"/", pdiv},
