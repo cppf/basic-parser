@@ -5,28 +5,42 @@
 using namespace std;
 
 
-// environment:
+
+int addr;
+vector<int> stack;
 map<string, Value> env;
 
-// primitive names:
-FN0(fsystem);
 map<string, Fn0> f0map = {
   {"system", fsystem}
 };
-FN1(fatn); FN1(fcos); FN1(fsin); FN1(ftan); FN1(fsqr);
-FN1(fexp); FN1(flog); FN1(fabs); FN1(ffix); FN1(fint);
 map<string, Fn1> f1map = {
+  {"not", pnot}, {"+", ppos}, {"-", pneg},
   {"atn", fatn}, {"cos", fcos}, {"sin", fsin}, {"tan", ftan}, {"sqr", fsqr},
   {"exp", fexp}, {"log", flog}, {"abs", fabs}, {"fix", ffix}, {"int", fint}
 };
-map<Fn1, string> pname1 = {{pnot, "not"}, {ppos, "+"}, {pneg, "-"}};
-map<Fn2, string> pname2 = {
-  {pand, "and"}, {por, "or"}, {pxor, "xor"}, {pimp, "imp"}, {peqv, "eqv"},
-  {peq, "="}, {plt, "<"}, {pgt, ">"}, {ple, "<="}, {pge, ">="}, {pne, "<>"},
-  {pmod, "mod"}, {padd, "+"}, {psub, "-"}, {pmul, "*"}, {pdiv, "/"},
-  {pidiv, "\\"}, {ppow, "^"}
+map<string, Fn2> f2map = {
+  {"and", pand}, {"or", por}, {"xor", pxor}, {"imp", pimp}, {"eqv", peqv},
+  {"=", peq}, {"<", plt}, {">", pgt}, {"<=", ple}, {">=", pge}, {"<>", pne},
+  {"mod", pmod}, {"+", padd}, {"-", psub}, {"*", pmul}, {"/", pdiv},
+  {"\\", pidiv}, {"^", ppow}
 };
 
+
+
+// Value fgoto(Value x) {
+//   addr = x.i(); return false;
+// }
+
+// Value fgosub(Value x) {
+//   rets.push_back(at);
+//   at = x.i(); return false;
+// }
+
+// Value freturn() {
+//   at = rets.back();
+//   rets.pop_back();
+//   return false;
+// }
 
 Value pand(Value x, Value y) { switch (max(x.t, y.t)) {
   case BOL: return x.b() && y.b();
@@ -237,8 +251,5 @@ Value fchr(Value x) { switch (x.t) {
 
 Value fsystem() {
   exit(0);
-  map<string, Fn1> f2map = {
-    {}
-  };
   return false;
 }

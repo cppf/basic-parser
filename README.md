@@ -14,7 +14,10 @@ use `./scanner <input file>` to run scanner.
 - virtual function called `ins` for insertion
 - operator overloading with `ostream`.
 - `friend` function used as multiple includes
+- was reusing `x` in parser which caused problems
 
+`27.06.2019`
+- ast needs transformation
 
 ```
 Subhajit Sahu

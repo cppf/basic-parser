@@ -4,6 +4,7 @@
 *.tab.h
 *.tab.c
 *.tab.cpp
+*.tab.hpp
 main
 
 # Editor files

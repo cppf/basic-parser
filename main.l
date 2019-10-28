@@ -1,6 +1,6 @@
 %{
 #include "mast.h"
-#include "main.tab.h"
+#include "main.tab.hpp"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
