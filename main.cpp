@@ -15,3 +15,8 @@ int main(int argc, char **argv) {
   printf("%s\n", env["a"].s().c_str());
   return 0;
 }
+
+
+void yyerror(const char *s) {
+  fprintf(stderr, "error: %s\n", s);
+}

@@ -16,8 +16,14 @@ use `./scanner <input file>` to run scanner.
 - `friend` function used as multiple includes
 - was reusing `x` in parser which caused problems
 
+
 `27.06.2019`
 - ast needs transformation
+
+`30.06.2019`
+- how do you have line numbers or labels in lines
+- how do you keep track of it
+- close needs to validates es to ints and call1 close
 
 ```
 Subhajit Sahu

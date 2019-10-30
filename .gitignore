@@ -1,11 +1,12 @@
 # Generated files
+main
 *.yy.c
 *.yy.cpp
 *.tab.h
 *.tab.c
 *.tab.cpp
 *.tab.hpp
-main
+*.log
 
 # Editor files
 .vscode/
