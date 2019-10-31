@@ -1,22 +1,160 @@
 #pragma once
 #include "mval.h"
 #include "mlib.h"
-#include <vector>
-#include <string>
 #include <sstream>
+#include <string>
+#include <vector>
+#include <utility>
 
 using namespace std;
 
 
+typedef pair<string, string> Definition;
+enum Kind {
+  NONE, LITR, ID, CALL, LINE, DECLARE, PROC, IF, SELECT,
+  FOR, WHILE, DO, EXIT, RETURN, GOSUB, GOTO, LINEINPUT, INPUT,
+  LET, CASE
+};
+
+
 struct Ast {
   int t;
-  Ast(int t);
-  Ast();
+  Ast(int _t) { t = _t; }
+  virtual void tos(ostream& o) {}
+  string s() { stringstream o; tos(o); return o.str(); }
+  friend ostream& operator<<(ostream& o, Ast& a) { a.tos(o); return o; }
+  friend ostream& operator<<(ostream& o, vector<Ast*> as) {
+    o<<*as.front();
+    for (auto& a : as) o<<" "<<*a;
+  }
+};
+
+struct Litr : Ast {
+  Value x;
+  Litr(Value _x) : Ast(LITR) { x = _x; }
+  void tos(ostream& o) { o<<x.s(); }
+};
+
+struct Id : Ast {
+  string x;
+  Id(string _x) : Ast(ID) { x = _x; }
+  void tos(ostream& o) { o<<x; }
 };
 
 struct Call : Ast {
-  Call(char *x, vector<Ast*> as);
+  string x;
+  vector<Ast*> as;
+  Call(string _x, vector<Ast*> _as) : Ast(CALL) { x = _x; as = _as; }
+  void tos(ostream& o) { o<<"("<<x<<" "<<as<<")"; }
 };
+
+struct Line : Ast {
+  string l;
+  Ast *x;
+  Line(string _l, Ast* _x) : Ast(LINE) { l = _l; x = _x; }
+  void tos(ostream& o) { if (l.size()) o<<l<<": "; o<<*x<<"\n"; }
+};
+
+struct Declare : Ast {
+  string x;
+  vector<Definition> fs;
+  Declare(string _x, vector<Definition> _fs) : Ast(DECLARE) { x = _x; fs = _fs; }
+  void tos(ostream& o) { o<<"(declare "<<x<<" ["<<fs<<"])"; }
+};
+
+struct Proc : Ast {
+  string x;
+  vector<Definition> fs;
+  Ast *b;
+  Proc(string _x, vector<Definition> _fs, Ast* _b) : Ast(PROC) { x = _x; fs = _fs; b = _b; }
+  void tos(ostream& o) { o<<"(proc "<<x<<" ["<<fs<<"]\n"<<*b<<")"; }
+};
+
+struct If : Ast {
+  Ast *c, *t, *e;
+  If(Ast* _c, Ast* _t, Ast* _e) : Ast(IF) { c = _c; t = _t; e = _e; }
+  void tos(ostream& o) { o<<"(if "<<*c<<" "<<*t<<" "<<*e<<")"; }
+};
+
+struct Select : Ast {
+  Ast *x;
+  vector<Ast*> cs;
+  Select(Ast* _x, vector<Ast*> _cs) : Ast(SELECT) { x = _x; cs = _cs; }
+  void tos(ostream& o) { o<<"(select\n"<<cs<<")"; }
+};
+
+struct For : Ast {
+  string x, n;
+  Ast *f, *t, *s, *b;
+  For(string _x, Ast *_f, Ast *_t, string _n, Ast *_s, Ast *_b) : Ast(FOR)
+  { x = _x; f = _f; t = _t; n = _n; s = _s; b = _b; }
+  void tos(ostream& o) { o<<"(for "<<x<<" ["<<*f<<" "<<*t<<"] "<<n<<" ["<<*s<<"]\n"<<*b<<")"; }
+};
+
+struct While : Ast {
+  Ast *c, *b;
+  While(Ast *_c, Ast *_b) : Ast(WHILE) { c = _c; b = _b; }
+  void tos(ostream& o) { o<<"(while "<<*c<<"\n"<<*b<<")"; }
+};
+
+struct Do : Ast {
+  Ast *ce, *cx, *b;
+  Do(Ast *_ce, Ast *_cx, Ast *_b) : Ast(DO) { ce = _ce; cx = _cx; b = _b; }
+  void tos(ostream& o) { o<<"(do "<<*ce<<"\n"<<*b<<" "<<*cx<<")"; }
+};
+
+struct Exit : Ast {
+  char f;
+  Exit(char _f) : Ast(EXIT) { f = _f; }
+  void tos(ostream& o) { o<<"(exit "<<f<<")"; }
+};
+
+struct Return : Ast {
+  string l;
+  Return(string _l) : Ast(RETURN) { l = _l; }
+  void tos(ostream& o) { o<<"(return "<<l<<")"; }
+};
+
+struct Gosub : Ast {
+  string l;
+  Gosub(string _l) : Ast(GOSUB) { l = _l; }
+  void tos(ostream& o) { o<<"(gosub "<<l<<")"; }
+};
+
+struct Goto : Ast {
+  string l;
+  Goto(string _l) : Ast(GOTO) { l = _l; }
+  void tos(ostream& o) { o<<"(goto "<<l<<")"; }
+};
+
+struct LineInput : Ast {
+  string p, x;
+  LineInput(string _p, string _x) : Ast(LINEINPUT) { p = _p; x = _x; }
+  void tos(ostream& o) { o<<"(lineinput "<<p<<" "<<x<<")"; }
+};
+
+struct Input : Ast {
+  string p;
+  vector<string> xs;
+  Input(string _p, vector<string> _xs) : Ast(INPUT) { p = _p; xs = _xs; }
+  void tos(ostream& o) { o<<"(input "<<p<<" "<<xs<<")"; }
+};
+
+struct Let : Ast {
+  string x;
+  Ast *e;
+  Let(string _x, Ast *_e) : Ast(LET) { x = _x; e = _e; }
+  void tos(ostream& o) { o<<"(let "<<x<<" "<<e<<")"; }
+};
+
+struct Case : Ast {
+  Ast *f, *t;
+  Case(Ast *_f, Ast *_t) : Ast(CASE) { f = _f; t = _t; }
+  void tos(ostream& o) { o<<"(case "<<*f<<" "<<*t<<")"; }
+};
+
+
+
 // struct Ast {
 //   int t;
 //   virtual void tos(ostream& o) {}

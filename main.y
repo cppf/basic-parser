@@ -160,7 +160,6 @@ io:
     INPUT es            { $$ = new Input("", "", $2); }
   | INPUT ';' es        { $$ = new Input("", "?", $3); }
   | INPUT e ';' es      { $$ = new Input($2, "?", $4); }
-    INPUT e ',' es      { $$ = new Input($2, "", $4); }
   | LINE INPUT x        { $$ = new LineInput("", "", $3); }
   | LINE INPUT ';' x    { $$ = mew LineInput("", "?", $4); }
   | LINE INPUT e ';' x  { $$ = new LineInput($3, "?", $5); }

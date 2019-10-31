@@ -102,7 +102,7 @@ STR \"(\\.|[^"\\])*\"
 \/      return DIV;
 \\      return IDIV;
 \^      return POW;
-[\,\;]  return yytext[0];
+[,;:]   return yytext[0];
 [\(\)]  return yytext[0];
 (?i:true|false)   { yylval.b = strcmp(lower(yytext), "true") == 0; return BOOLEANV; }
 {INT}             { yylval.i = atoi(yytext); return INTEGERV; }
