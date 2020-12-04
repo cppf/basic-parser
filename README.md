@@ -1,3 +1,12 @@
+LLVM based parser in C++ for simpler BASIC.
+
+**Course**: [Compilers], Monsoon 2019<br>
+**Taught by**: Prof. Suresh Purini
+<br>
+<br>
+
+[Compilers]: https://github.com/iiithf/compilers
+
 `e**.bas` are example input programs to scanner.
 use `./scanner <input file>` to run scanner.
 
@@ -24,8 +33,3 @@ use `./scanner <input file>` to run scanner.
 - how do you have line numbers or labels in lines
 - how do you keep track of it
 - close needs to validates es to ints and call1 close
-
-```
-Subhajit Sahu
-2018801013
-```
